@@ -1,0 +1,177 @@
+{
+  "settings": {
+    "refresh_interval": "1s",
+    "number_of_shards": 15,
+    "number_of_replicas": 1,
+    "index": {
+      "store.preload": [
+        "nvd",
+        "dvd"
+      ],
+      "sort.field": [
+        "price",
+        "sales",
+        "ficti"
+      ],
+      "sort.order": [
+        "asc",
+        "desc",
+        "desc"
+      ],
+      "search.slowlog.threshold.query.warn": "500ms",
+      "search.slowlog.threshold.fetch.warn": "1s",
+      "indexing.slowlog.threshold.index.warn": "1s"
+    },
+    "analysis": {
+      "analyzer": {
+        "ik_index_analyzer": {
+          "type": "custom",
+          "tokenizer": "ik_max_word",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "ik_index_html_strip_analyzer": {
+          "type": "custom",
+          "tokenizer": "ik_max_word",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "ik_search_analyzer": {
+          "type": "custom",
+          "tokenizer": "ik_smart",
+          "char_filter": [
+            "html_strip"
+          ],
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "pinyin_analyzer": {
+          "tokenizer": "pinyin_tokenizer"
+        },
+        "ngram_analyzer": {
+          "tokenizer": "ngram_tokenizer"
+        }
+      },
+      "tokenizer": {
+        "pinyin_tokenizer": {
+          "type": "pinyin",
+          "keep_separate_first_letter": true,
+          "keep_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "remove_duplicated_term": true
+        },
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 1,
+          "max_gram": 1
+        }
+      }
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "_source": {
+      "excludes": [
+        "store_name",
+        "store_info",
+        "description",
+        "keyword"
+      ]
+    },
+    "properties": {
+      "id": {
+        "type": "keyword",
+        "doc_values": false
+      },
+      "store_name": {
+        "type": "text",
+        "index_options": "positions",
+        "analyzer": "ik_index_analyzer",
+        "search_analyzer": "ik_search_analyzer",
+        "fields": {
+          "pinyin": {
+            "type": "text",
+            "store": false,
+            "analyzer": "pinyin_analyzer",
+            "search_analyzer": "pinyin_analyzer"
+          },
+          "single": {
+            "type": "text",
+            "store": false,
+            "index_options": "positions",
+            "analyzer": "ngram_analyzer",
+            "search_analyzer": "ngram_analyzer"
+          }
+        }
+      },
+      "desc": {
+        "type": "text",
+        "index_options": "positions",
+        "analyzer": "ik_index_analyzer",
+        "search_analyzer": "ik_search_analyzer"
+      },
+      "store_info": {
+        "type": "text",
+        "index_options": "positions",
+        "copy_to": "desc",
+        "analyzer": "ik_index_analyzer",
+        "search_analyzer": "ik_search_analyzer"
+      },
+      "description": {
+        "type": "text",
+        "index_options": "positions",
+        "copy_to": "desc",
+        "analyzer": "ik_index_html_strip_analyzer",
+        "search_analyzer": "ik_search_analyzer"
+      },
+      "keyword": {
+        "type": "text",
+        "copy_to": "desc",
+        "index_options": "positions",
+        "analyzer": "ik_index_analyzer",
+        "search_analyzer": "ik_search_analyzer"
+      },
+      "cate_id": {
+        "type": "keyword",
+        "doc_values": false
+      },
+      "price": {
+        "type": "double"
+      },
+      "sales": {
+        "type": "long"
+      },
+      "ficti": {
+        "type": "long"
+      },
+      "is_hot": {
+        "type": "keyword"
+      },
+      "is_benefit": {
+        "type": "keyword"
+      },
+      "is_best": {
+        "type": "keyword"
+      },
+      "is_new": {
+        "type": "keyword"
+      },
+      "is_postage": {
+        "type": "keyword"
+      },
+      "is_good": {
+        "type": "keyword"
+      },
+      "create_time":{
+        "type": "date"
+      }, "update_time":{
+        "type": "date"
+      }
+    }
+  }
+}
